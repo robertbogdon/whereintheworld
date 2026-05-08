@@ -1,7 +1,7 @@
 # WhereInTheWorld 🗺️
 
 **OwnTracks location history service** — stores location pings with PostGIS and
-provides a query API for OwnClaw agents and other consumers.
+provides a query API for OpenClaw agents and other consumers.
 
 ## Quick Start
 
@@ -29,7 +29,7 @@ curl -s -H "X-API-Key: $(grep WITW_API_KEY .env | cut -d= -f2)" \
 └──────────────┘     │  :8000           │     └──────────────────┘
                      │  :36024 (host)   │
 ┌──────────────┐     │                  │
-│  OwnClaw     │────▶│  /api/locations  │
+│  OpenClaw     │────▶│  /api/locations  │
 │  Agent       │     │  /api/places     │
 └──────────────┘     └──────────────────┘
 ```

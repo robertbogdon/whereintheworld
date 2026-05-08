@@ -49,7 +49,7 @@ app = FastAPI(
     description=(
         "Personal location history service. "
         "Accepts pings from OwnTracks and provides a query API "
-        "for OwnClaw agents and other consumers."
+        "for OpenClaw agents and other consumers."
     ),
     version="0.1.0",
     lifespan=lifespan,
