@@ -14,7 +14,9 @@ class OwnTracksPayload(BaseModel):
     See: https://owntracks.org/book/tech/json/
     """
 
-    _type: str = Field("location", alias="_type")
+    payload_type: str = Field(
+        "location", alias="_type", serialization_alias="_type"
+    )
     tst: int  # Unix epoch seconds (required)
     lat: float  # Latitude (required)
     lon: float  # Longitude (required)
@@ -34,8 +36,7 @@ class OwnTracksPayload(BaseModel):
     excluded: Optional[list[str]] = None  # Exited regions
     geofence: Optional[str] = None  # Named geofence (inferred if absent)
 
-    class Config:
-        populate_by_name = True
+    model_config = {"populate_by_name": True}
 
 
 # ── API responses ───────────────────────────────────────────────────
