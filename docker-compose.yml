@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  whereintheworld-db:
+    container_name: whereintheworld-db
+    image: postgis/postgis:17-3.5-alpine
+    environment:
+      POSTGRES_DB: ${WITW_DB_NAME:-whereintheworld}
+      POSTGRES_USER: ${WITW_DB_USER:-witw}
+      POSTGRES_PASSWORD: ${WITW_DB_PASSWORD:?Set WITW_DB_PASSWORD}
+    volumes:
+      - whereintheworld-pgdata:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/01-init-db.sql:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${WITW_DB_USER:-witw} -d ${WITW_DB_NAME:-whereintheworld}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  whereintheworld:
+    container_name: whereintheworld
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${HOST_BIND_ADDRESS:-127.0.0.1}:${HOST_PORT:-36024}:8000"
+    environment:
+      WITW_DB_HOST: ${WITW_DB_HOST:-whereintheworld-db}
+      WITW_DB_PORT: ${WITW_DB_PORT:-5432}
+      WITW_DB_USER: ${WITW_DB_USER:-witw}
+      WITW_DB_PASSWORD: ${WITW_DB_PASSWORD:?Set WITW_DB_PASSWORD}
+      WITW_DB_NAME: ${WITW_DB_NAME:-whereintheworld}
+      WITW_API_KEY: ${WITW_API_KEY:?Set WITW_API_KEY}
+    depends_on:
+      whereintheworld-db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  whereintheworld-pgdata:
